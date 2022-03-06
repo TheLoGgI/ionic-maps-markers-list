@@ -10,6 +10,8 @@
 
 # production
 /build
+/android-build
+/android
 .env
 
 # misc
