@@ -27,11 +27,11 @@ import {
   setupIonicReact,
 } from "@ionic/react"
 import { IonReactRouter } from "@ionic/react-router"
-import { ellipse, list, map } from "ionicons/icons"
+import { list, map } from "ionicons/icons"
 import { Redirect, Route } from "react-router-dom"
 
+import LocationPage from "./pages/LocationPage"
 import Tab1 from "./pages/Tab1"
-import Tab2 from "./pages/Tab2"
 import Tab3 from "./pages/Tab3"
 import { StoreContextProvider } from "./store/AppContext"
 
@@ -53,11 +53,11 @@ const IonicApp: React.FC = () => (
           <Route exact path="/list">
             <Tab1 />
           </Route>
-          <Route exact path="/tab2">
-            <Tab2 />
-          </Route>
           <Route path="/map">
             <Tab3 />
+          </Route>
+          <Route path="/location/:placeId">
+            <LocationPage />
           </Route>
           <Route exact path="/">
             <Redirect to="/list" />
@@ -67,10 +67,6 @@ const IonicApp: React.FC = () => (
           <IonTabButton tab="list" href="/list">
             <IonIcon icon={list} />
             <IonLabel>List</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon icon={ellipse} />
-            <IonLabel>Tab 2</IonLabel>
           </IonTabButton>
           <IonTabButton tab="map" href="/map">
             <IonIcon icon={map} />

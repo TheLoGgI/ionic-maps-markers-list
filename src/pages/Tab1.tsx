@@ -8,23 +8,22 @@ import {
   IonList,
   IonListHeader,
   IonPage,
+  IonRouterLink,
   IonText,
   IonTitle,
   IonToolbar,
+  useIonViewDidEnter,
 } from "@ionic/react"
 import { useContext } from "react"
 import React from "react"
 
 import ExploreContainer from "../components/ExploreContainer"
+import useStorage from "../hooks/useStorage"
 import { StoreContext } from "../store/AppContext"
 
 const Tab1: React.FC = () => {
-  const store = useContext(StoreContext)
-  console.log("store: ", store)
-  // store.dispatch({ type: "set-map-markers", payload: ["asddas"] })
-
-  // React.useEffect(() => {
-  // }, [store])
+  const { state } = useContext(StoreContext)
+  // const { getLocationStorage } = useStorage()
 
   return (
     <IonPage>
@@ -34,10 +33,8 @@ const Tab1: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        {store.state.locations.length === 0 ? (
-          <IonText className="mt-20 text-center">
-            You have no markers placed
-          </IonText>
+        {state.locations.length === 0 ? (
+          <ExploreContainer name="You have no markers placed" />
         ) : (
           <IonList>
             <IonListHeader>
@@ -45,8 +42,8 @@ const Tab1: React.FC = () => {
               <IonTitle>LatLng</IonTitle>
               <IonTitle>Location</IonTitle>
             </IonListHeader>
-            {store.state.locations.map((location, i) => (
-              <IonItem key={i}>
+            {state.locations.map((location, i) => (
+              <IonItem key={i} routerLink={`location/${location.placeId}`}>
                 <IonListHeader>
                   <IonLabel>{location.name}</IonLabel>
                   <IonLabel>

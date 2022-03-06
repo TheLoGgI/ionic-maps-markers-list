@@ -16,6 +16,14 @@ const Tab3: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonTitle>Map</IonTitle>
+          {/* <IonButtons slot="end">
+            <IonButton
+              onClick={() => showActions()}
+              className="text-gray-200 normal-case"
+            >
+              Show Possible Actions
+            </IonButton>
+          </IonButtons> */}
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>

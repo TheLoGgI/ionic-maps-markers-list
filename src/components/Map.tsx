@@ -1,11 +1,11 @@
 import "../theme/googleMaps.info.style.css"
 
+import { Geolocation } from "@capacitor/geolocation"
 import { Wrapper } from "@googlemaps/react-wrapper"
 import { IonAlert } from "@ionic/react"
 import React, { useContext, useEffect } from "react"
 
-import useAxiosFetch from "../hooks/useAxios"
-import useReverseLatLng from "../hooks/useReverseLatLng"
+import useStorage from "../hooks/useStorage"
 import { StoreContext } from "../store/AppContext"
 
 export interface Location {
@@ -19,6 +19,7 @@ export type MapMarkerType = {
   coordinates: { lat: number; lng: number }
   name: string
   address: string
+  placeId: string
 }
 
 interface MapProps {
@@ -80,20 +81,10 @@ const MapView: React.FC<MapProps> = ({
     React.useState<GeolocationPosition>({
       coords: { latitude: 55.805904, longitude: 9.469118 },
     } as GeolocationPosition)
-
-  navigator.geolocation.getCurrentPosition((position) =>
-    setCurrentPossition(position)
-  )
+  const { setLocationStorage, updateLocationStorage } = useStorage()
   const geocoder = new google.maps.Geocoder()
-  // const latlngObject = React.useMemo(
-  //   () => ({
-  //     lat: currentPostion.coords.latitude,
-  //     lng: currentPostion.coords.longitude,
-  //   }),
-  //   [currentPostion]
-  // )
-  // const { data: addressData, isFetched } = useReverseLatLng(latlngObject)
 
+  // Paint markers from the store / previeous vistet
   const addMarkers = React.useCallback(() => {
     locations.forEach((markerData, index) => {
       let infoWindow = new google.maps.InfoWindow({
@@ -118,36 +109,42 @@ const MapView: React.FC<MapProps> = ({
       marker.addListener("dblclick", (e) => {
         deleteMarker(index)
         marker.setMap(null)
+        updateLocationStorage(locations)
       })
     })
-  }, [deleteMarker, locations, map])
+  }, [deleteMarker, locations, map, updateLocationStorage])
 
   // Add new markers to map
   function addMarker(latLng: { lat: number; lng: number }, name: string) {
+    const markerCommonProps = {
+      coordinates: latLng,
+      name: name,
+    }
+
     geocoder.geocode({ location: latLng }, (results, status) => {
+      // TODO: sort out "plus_code" in foratted_address, perhaps useing address_components
+
+      console.log("results: ", results)
       if (status === "OK" && results[0]) {
-        // Update store, marker with address
-        setMapMarkers({
-          coordinates: latLng,
-          name: name,
+        const markerWIthAdress = {
+          ...markerCommonProps,
           address: results[0].formatted_address,
-        })
+          placeId: results[0].place_id,
+        }
+        // Update store, marker with address
+        setMapMarkers(markerWIthAdress)
+        setLocationStorage(markerWIthAdress)
       } else {
-        // Update store, marker without address
-        setMapMarkers({
-          coordinates: { lat: latLng.lat, lng: latLng.lng },
-          name: name,
+        const markerWithoutAddress = {
+          ...markerCommonProps,
           address: "",
-        })
+          placeId: `${latLng.lat}-${latLng.lng}`,
+        }
+        // Update store, marker without address
+        setLocationStorage(markerWithoutAddress)
+        setMapMarkers(markerWithoutAddress)
       }
     })
-
-    // setCurrentPossition({
-    //   coords: {
-    //     latitude: latLng.lat,
-    //     longitude: latLng.lng,
-    //   },
-    // } as GeolocationPosition)
   }
 
   useEffect(() => {
@@ -162,6 +159,15 @@ const MapView: React.FC<MapProps> = ({
           maxZoom: 16,
         })
       )
+    }
+
+    // Use the Geolocation API to get the current position
+    try {
+      Geolocation.getCurrentPosition().then((position) => {
+        setCurrentPossition(position as GeolocationPosition)
+      })
+    } catch (error) {
+      console.error(error)
     }
   }, [
     mapRef,

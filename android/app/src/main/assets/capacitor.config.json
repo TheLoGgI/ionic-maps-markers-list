@@ -1,0 +1,6 @@
+{
+	"appId": "com.example.app",
+	"appName": "react-friends",
+	"webDir": "build",
+	"bundledWebRuntime": false
+}

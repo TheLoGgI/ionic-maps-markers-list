@@ -1,6 +1,7 @@
-import React, { createContext, useReducer } from "react"
+import React, { createContext, useContext, useEffect, useReducer } from "react"
 
 import { MapMarkerType } from "../components/Map"
+import useStorage from "../hooks/useStorage"
 
 type StoreState = {
   locations: MapMarkerType[]
@@ -12,6 +13,11 @@ const initialState: StoreState = {
 
 const reducers = (state: StoreState, action: any) => {
   switch (action.type) {
+    case "update-map-markers":
+      return {
+        ...state,
+        locations: [...action.payload],
+      }
     case "set-map-markers":
       return {
         ...state,
@@ -40,10 +46,22 @@ export const StoreContext = createContext<StoreContextState>({
 
 export const StoreContextProvider: React.FC = (props) => {
   const [store, dispatch] = useReducer(reducers, initialState)
+  const { getLocationStorage } = useStorage()
+
+  useEffect(() => {
+    ;(async () => {
+      const locations = await getLocationStorage()
+      dispatch({ type: "update-map-markers", payload: locations })
+    })()
+  }, [getLocationStorage])
 
   return (
     <StoreContext.Provider value={{ state: store, dispatch }}>
       {props.children}
     </StoreContext.Provider>
   )
+}
+
+export const useStoreContext = () => {
+  return useContext(StoreContext)
 }
