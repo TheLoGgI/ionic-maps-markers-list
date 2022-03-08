@@ -31,8 +31,8 @@ import { list, map } from "ionicons/icons"
 import { Redirect, Route } from "react-router-dom"
 
 import LocationPage from "./pages/LocationPage"
+import MapPage from "./pages/MapPage"
 import Tab1 from "./pages/Tab1"
-import Tab3 from "./pages/Tab3"
 import { StoreContextProvider } from "./store/AppContext"
 
 setupIonicReact()
@@ -54,7 +54,7 @@ const IonicApp: React.FC = () => (
             <Tab1 />
           </Route>
           <Route path="/map">
-            <Tab3 />
+            <MapPage />
           </Route>
           <Route path="/location/:placeId">
             <LocationPage />

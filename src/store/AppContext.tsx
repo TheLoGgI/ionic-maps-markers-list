@@ -7,16 +7,38 @@ type StoreState = {
   locations: MapMarkerType[]
 }
 
+type PayloadOptions = MapMarkerType | MapMarkerType[] | number
+
+type ReducerActionType = {
+  type: string
+  payload: any
+}
+
 const initialState: StoreState = {
   locations: [],
 }
 
-const reducers = (state: StoreState, action: any) => {
+// TODO: Type action and payloadOptions
+// TODO: move localstorage operations to this file toghter with state
+const reducers = (state: StoreState, action: ReducerActionType) => {
   switch (action.type) {
     case "update-map-markers":
       return {
         ...state,
         locations: [...action.payload],
+      }
+    case "update-map-marker":
+      const indexToUpdate = state.locations.findIndex(
+        (location) => (location.id = action.payload.id)
+      )
+      if (indexToUpdate !== -1) {
+        state.locations[indexToUpdate] = {
+          ...state.locations[indexToUpdate],
+          date: action.payload.date,
+        }
+      }
+      return {
+        ...state,
       }
     case "set-map-markers":
       return {
@@ -39,7 +61,7 @@ export interface StoreContextState {
   dispatch: React.Dispatch<any>
 }
 
-export const StoreContext = createContext<StoreContextState>({
+const StoreContext = createContext<StoreContextState>({
   state: initialState,
   dispatch: () => undefined,
 })

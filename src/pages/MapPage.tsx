@@ -1,5 +1,3 @@
-import "./Tab3.css"
-
 import {
   IonContent,
   IonHeader,
@@ -10,20 +8,12 @@ import {
 
 import Map from "../components/Map"
 
-const Tab3: React.FC = () => {
+const MapPage: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
           <IonTitle>Map</IonTitle>
-          {/* <IonButtons slot="end">
-            <IonButton
-              onClick={() => showActions()}
-              className="text-gray-200 normal-case"
-            >
-              Show Possible Actions
-            </IonButton>
-          </IonButtons> */}
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -33,4 +23,4 @@ const Tab3: React.FC = () => {
   )
 }
 
-export default Tab3
+export default MapPage

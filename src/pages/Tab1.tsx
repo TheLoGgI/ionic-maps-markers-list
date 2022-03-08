@@ -8,21 +8,18 @@ import {
   IonList,
   IonListHeader,
   IonPage,
-  IonRouterLink,
   IonText,
   IonTitle,
   IonToolbar,
-  useIonViewDidEnter,
 } from "@ionic/react"
-import { useContext } from "react"
 import React from "react"
 
 import ExploreContainer from "../components/ExploreContainer"
 import useStorage from "../hooks/useStorage"
-import { StoreContext } from "../store/AppContext"
+import { useStoreContext } from "../store/AppContext"
 
 const Tab1: React.FC = () => {
-  const { state } = useContext(StoreContext)
+  const { state } = useStoreContext()
   // const { getLocationStorage } = useStorage()
 
   return (
@@ -45,7 +42,7 @@ const Tab1: React.FC = () => {
             {state.locations.map((location, i) => (
               <IonItem key={i} routerLink={`location/${location.placeId}`}>
                 <IonListHeader>
-                  <IonLabel>{location.name}</IonLabel>
+                  <IonLabel>{location.date}</IonLabel>
                   <IonLabel>
                     <IonLabel>lat: {location.coordinates.lat}</IonLabel>
                     <IonLabel>
