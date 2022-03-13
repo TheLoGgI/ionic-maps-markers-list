@@ -1,6 +1,6 @@
 {
-	"appId": "com.example.app",
-	"appName": "react-friends",
+	"appId": "ionic-travler.app",
+	"appName": "ionic-travler",
 	"webDir": "build",
-	"bundledWebRuntime": false
+	"bundledWebRuntime": true
 }

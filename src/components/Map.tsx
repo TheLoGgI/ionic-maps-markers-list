@@ -3,8 +3,10 @@ import "../theme/googleMaps.info.style.css"
 import { Geolocation } from "@capacitor/geolocation"
 import { Wrapper } from "@googlemaps/react-wrapper"
 import { IonAlert } from "@ionic/react"
+import { ref as dbRef, set } from "firebase/database"
 import React, { useCallback, useEffect } from "react"
 
+import { db } from "../firebase"
 import useStorage from "../hooks/useStorage"
 import { useStoreContext } from "../store/AppContext"
 
@@ -92,9 +94,9 @@ const MapView: React.FC<MapProps> = ({
   // Remove marker from the map
   const removeMarker = useCallback(
     (marker: google.maps.Marker, index: number) => {
-      deleteMarker(index)
-      marker.setMap(null)
-      updateLocationsStorage(locations)
+      deleteMarker(index) // remove from state
+      marker.setMap(null) // remove from map
+      updateLocationsStorage(locations) // remove from localstorage
     },
     [deleteMarker, locations, updateLocationsStorage]
   )
@@ -139,7 +141,7 @@ const MapView: React.FC<MapProps> = ({
         map: map!,
       })
 
-      // map?.bindTo("infowindow", infoWindow)
+      // domready event triggers when the infowindo is ready e.g. open
       infoWindow.addListener("domready", () => {
         document
           .getElementById(`delete-${index}`)
@@ -157,7 +159,7 @@ const MapView: React.FC<MapProps> = ({
               date: markerData.date,
               id: markerData.id,
             }))
-            infoWindow.notify("content")
+            // infoWindow.notify("content")
           })
       })
 
@@ -178,7 +180,9 @@ const MapView: React.FC<MapProps> = ({
     const markerCommonProps = {
       coordinates: latLng,
       date,
-      id: (Date.now() + latLng.lat + latLng.lng).toString(16),
+      id: (Date.now() + latLng.lat + latLng.lng)
+        .toString(16)
+        .replaceAll(".", "-"),
     }
 
     geocoder.geocode({ location: latLng }, (results, status) => {
@@ -195,6 +199,7 @@ const MapView: React.FC<MapProps> = ({
         setMapMarkers(markerWIthAdress)
         console.log("markerWIthAdress: ", markerWIthAdress)
         addLocationStorage(markerWIthAdress)
+        set(dbRef(db, `markers/${markerWIthAdress?.placeId}`), markerWIthAdress)
       } else {
         const markerWithoutAddress = {
           ...markerCommonProps,
@@ -205,6 +210,10 @@ const MapView: React.FC<MapProps> = ({
         // Update store, marker without address
         addLocationStorage(markerWithoutAddress)
         setMapMarkers(markerWithoutAddress)
+        set(
+          dbRef(db, `markers/${markerWithoutAddress?.placeId}`),
+          markerWithoutAddress
+        )
       }
     })
   }
@@ -219,7 +228,6 @@ const MapView: React.FC<MapProps> = ({
       console.error(error)
     }
   }, [])
-
   // Initilizing the map with the center point from the Geoloaction or
   useEffect(() => {
     if (mapRef.current && !map) {

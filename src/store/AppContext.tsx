@@ -1,6 +1,8 @@
+import { ref as dbRef, onValue, set } from "firebase/database"
 import React, { createContext, useContext, useEffect, useReducer } from "react"
 
 import { MapMarkerType } from "../components/Map"
+import { db } from "../firebase"
 import useStorage from "../hooks/useStorage"
 
 type StoreState = {
@@ -29,13 +31,17 @@ const reducers = (state: StoreState, action: ReducerActionType) => {
       }
     case "update-map-marker":
       const indexToUpdate = state.locations.findIndex(
-        (location) => (location.id = action.payload.id)
+        (location) => location.id === action.payload.id
       )
+
       if (indexToUpdate !== -1) {
         state.locations[indexToUpdate] = {
           ...state.locations[indexToUpdate],
           date: action.payload.date,
         }
+        set(dbRef(db, `markers`), {
+          ...state.locations,
+        })
       }
       return {
         ...state,
@@ -47,9 +53,11 @@ const reducers = (state: StoreState, action: ReducerActionType) => {
       }
     case "delete-map-marker":
       state.locations.splice(action.payload, 1)
+      set(dbRef(db, `markers`), {
+        ...state.locations,
+      })
       return {
         ...state,
-        locations: [...state.locations],
       }
     default:
       return state
@@ -68,14 +76,26 @@ const StoreContext = createContext<StoreContextState>({
 
 export const StoreContextProvider: React.FC = (props) => {
   const [store, dispatch] = useReducer(reducers, initialState)
+  const [markerState, setMarkerState] = React.useState([])
   const { getLocationStorage } = useStorage()
+
+  useEffect(() => {
+    const starCountRef = dbRef(db, `markers`)
+    onValue(starCountRef, (snapshot) => {
+      const data = snapshot.val()
+      setMarkerState(Object.values(data))
+    })
+  }, [])
 
   useEffect(() => {
     ;(async () => {
       const locations = await getLocationStorage()
-      dispatch({ type: "update-map-markers", payload: locations })
+      dispatch({
+        type: "update-map-markers",
+        payload: markerState.length > 0 ? markerState : locations,
+      })
     })()
-  }, [getLocationStorage])
+  }, [getLocationStorage, markerState])
 
   return (
     <StoreContext.Provider value={{ state: store, dispatch }}>
