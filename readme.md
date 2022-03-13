@@ -47,7 +47,7 @@ It was had keeping track of all of the different states
 
 ### For Web
 
-Live version [https://lasseaakjaer.com/ionic-travler](https://lasseaakjaer.com/ionic-travler)
+Live version [Ionic travler](https://ionic-travler.lasseaakjaer.com/)
 
 ### For android
 
@@ -65,6 +65,10 @@ Download the project from GitHub: [TheLoGgI/ionic-maps-markers-list](https://git
 ### For IOS
 
 Figure it out yourself, use Xcode or something
+
+### Disclaimer
+
+    Becouse of API restrictions IOS and Android application don't have access to use the map.
 
 ## To do / Comming
 
