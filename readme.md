@@ -47,7 +47,7 @@ It was had keeping track of all of the different states
 
 ### For Web
 
-Live version [Ionic travler](https://ionic-travler.lasseaakjaer.com/)
+Live version [Ionic travler](http://ionic-travler.lasseaakjaer.com/map)
 
 ### For android
 
