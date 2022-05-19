@@ -1,5 +1,3 @@
-import "./LocationPage.css"
-
 import { Camera } from "@capacitor/camera"
 import { Toast } from "@capacitor/toast"
 import {

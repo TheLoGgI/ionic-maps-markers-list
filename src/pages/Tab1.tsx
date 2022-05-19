@@ -1,30 +1,22 @@
-import "./Tab1.css"
-
 import {
   IonCol,
   IonContent,
   IonGrid,
   IonHeader,
-  IonItem,
   IonLabel,
-  IonList,
-  IonListHeader,
   IonPage,
   IonRouterLink,
   IonRow,
-  IonText,
   IonTitle,
   IonToolbar,
 } from "@ionic/react"
 import React from "react"
 
 import ExploreContainer from "../components/ExploreContainer"
-import useStorage from "../hooks/useStorage"
 import { useStoreContext } from "../store/AppContext"
 
 const Tab1: React.FC = () => {
   const { state } = useStoreContext()
-  // const { getLocationStorage } = useStorage()
 
   return (
     <IonPage>
