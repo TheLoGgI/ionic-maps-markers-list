@@ -138,7 +138,12 @@ const MapView: React.FC<MapProps> = ({
           markerData.coordinates.lat,
           markerData.coordinates.lng
         ),
-        map: map!,
+        map: map,
+      })
+
+      // Open marker on click
+      marker.addListener("click", () => {
+        infoWindow.open(map, marker)
       })
 
       // domready event triggers when the infowindo is ready e.g. open
@@ -161,11 +166,6 @@ const MapView: React.FC<MapProps> = ({
             }))
             // infoWindow.notify("content")
           })
-      })
-
-      // Open marker on click
-      marker.addListener("click", () => {
-        infoWindow.open(map!, marker)
       })
 
       // Delete Marker
@@ -197,7 +197,6 @@ const MapView: React.FC<MapProps> = ({
 
         // Update store, marker with address
         setMapMarkers(markerWIthAdress)
-        console.log("markerWIthAdress: ", markerWIthAdress)
         addLocationStorage(markerWIthAdress)
         set(dbRef(db, `markers/${markerWIthAdress?.placeId}`), markerWIthAdress)
       } else {

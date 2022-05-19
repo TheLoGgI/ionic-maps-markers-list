@@ -74,3 +74,7 @@ Figure it out yourself, use Xcode or something
 
 - Make markers/location shareable
 - Add the markers to a calender.
+-
+-
+- Update UI for better visual appeal.
+- (Visualisere lokationer)
