@@ -30,7 +30,7 @@ const Tab1: React.FC = () => {
           <ExploreContainer name="You have no markers placed" />
         ) : (
           <IonGrid>
-            <IonRow className="text-sm font-bold">
+            <IonRow className="text-sm font-bold border-b-2">
               <IonCol size="3">
                 <p>Date</p>
               </IonCol>
@@ -47,7 +47,7 @@ const Tab1: React.FC = () => {
                 color="dark"
                 href={`location/${location.placeId}`}
               >
-                <IonRow className="bg-[#171717]">
+                <IonRow className="border-b-2">
                   <IonCol size="3">{location.date}</IonCol>
                   <IonCol size="5">
                     <div className="flex flex-col">

@@ -1,10 +1,18 @@
 # https://stackoverflow.com/a/59887425/9648335
 # Allow mod_dir to serve index.html when requesting the directory
-DirectoryIndex index.html
+# DirectoryIndex index.html
+# Options +Indexes
 
 RewriteEngine On
+# RewriteOptions inherit
 
-# Front-controller (exclude static resources)
+# # Front-controller (exclude static resources)
+# RewriteRule ^index\.html$ - [L]
+# RewriteCond %{REQUEST_URI} !^/(assets|css|img|js|modules|partials|vendor)/
+# RewriteRule . index.html [L]
+
+RewriteBase /
 RewriteRule ^index\.html$ - [L]
-RewriteCond %{REQUEST_URI} !^/(assets|css|img|js|modules|partials|vendor)/
-RewriteRule . index.html [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]

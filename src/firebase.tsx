@@ -2,8 +2,6 @@
 import { initializeApp } from "firebase/app"
 import { getDatabase, ref } from "firebase/database"
 import { getStorage } from "firebase/storage"
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -21,11 +19,6 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig)
 
 export const db = getDatabase(app)
-
-// export const dbRef = ref(database)
-// export function getPostRef(postId) {
-//   return ref(database, "posts/" + postId);
-// }
 
 // Reference to the storage service
 export const storage = getStorage(app)

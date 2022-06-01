@@ -47,7 +47,7 @@ It was had keeping track of all of the different states
 
 ### For Web
 
-Live version [Ionic travler](http://ionic-travler.lasseaakjaer.com/map)
+...
 
 ### For android
 
@@ -61,10 +61,6 @@ Download the project from GitHub: [TheLoGgI/ionic-maps-markers-list](https://git
   - Reboot machine.
   - Install Android 8.0 (Oreo) from the settings. Tools > SDK Manager > System Settings > Android SDK
   - Install device PIXEL 2 API 26 from the device manager. Tools > Device manager
-
-### For IOS
-
-Figure it out yourself, use Xcode or something
 
 ### Disclaimer
 

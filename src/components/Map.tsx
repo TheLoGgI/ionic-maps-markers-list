@@ -177,43 +177,32 @@ const MapView: React.FC<MapProps> = ({
 
   // Add new markers to map
   function addMarker(latLng: { lat: number; lng: number }, date: string) {
-    const markerCommonProps = {
+    const markerProps = {
       coordinates: latLng,
       date,
       id: (Date.now() + latLng.lat + latLng.lng)
         .toString(16)
         .replaceAll(".", "-"),
+        address: "",
+        placeId: `${latLng.lat}-${latLng.lng}`,
     }
 
     geocoder.geocode({ location: latLng }, (results, status) => {
       // TODO: sort out "plus_code" in foratted_address, perhaps useing address_components
 
       if (status === "OK" && results[0]) {
-        const markerWIthAdress = {
-          ...markerCommonProps,
-          address: results[0].formatted_address,
-          placeId: results[0].place_id,
-        }
-
-        // Update store, marker with address
-        setMapMarkers(markerWIthAdress)
-        addLocationStorage(markerWIthAdress)
-        set(dbRef(db, `markers/${markerWIthAdress?.placeId}`), markerWIthAdress)
-      } else {
-        const markerWithoutAddress = {
-          ...markerCommonProps,
-          address: "",
-          placeId: `${latLng.lat}-${latLng.lng}`,
-        }
+        markerProps.address = results[0].formatted_address
+        markerProps.placeId = results[0].place_id
+      } 
 
         // Update store, marker without address
-        addLocationStorage(markerWithoutAddress)
-        setMapMarkers(markerWithoutAddress)
+        addLocationStorage(markerProps)
+        setMapMarkers(markerProps)
         set(
-          dbRef(db, `markers/${markerWithoutAddress?.placeId}`),
-          markerWithoutAddress
+          dbRef(db, `markers/${markerProps?.placeId}`),
+          markerProps
         )
-      }
+      
     })
   }
 
