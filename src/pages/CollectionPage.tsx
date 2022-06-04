@@ -1,13 +1,8 @@
 import {
-  IonAvatar,
   IonContent,
   IonHeader,
-  IonItem,
-  IonItemDivider,
-  IonLabel,
   IonList,
   IonPage,
-  IonRouterLink,
   IonSegment,
   IonSegmentButton,
   IonTitle,

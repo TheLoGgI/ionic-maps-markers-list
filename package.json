@@ -5,6 +5,7 @@
   "private": true,
   "homepage": "/",
   "dependencies": {
+    "@babel/plugin-syntax-flow": "^7.17.12",
     "@capacitor/android": "^3.4.3",
     "@capacitor/app": "1.1.1",
     "@capacitor/camera": "^1.3.1",
@@ -26,7 +27,8 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.0",
-    "typescript": "^4.1.3"
+    "typescript": "^4.1.3",
+    "vercel": "^25.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -56,11 +58,11 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^3.4.3",
+    "@types/google.maps": "^3.43.3",
     "@types/node": "^12.19.15",
     "@types/react": "^16.14.3",
     "@types/react-dom": "^16.9.10",
     "@types/react-router": "^5.1.11",
-    "@types/react-router-dom": "^5.1.7",
-    "@types/google.maps": "^3.43.3"
+    "@types/react-router-dom": "^5.1.7"
   }
 }
