@@ -1,5 +1,11 @@
 import { ref as dbRef, onValue, set } from "firebase/database"
-import React, { createContext, useContext, useEffect, useReducer } from "react"
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+} from "react"
 
 import { MapMarkerType } from "../components/Map"
 import { db } from "../firebase"
@@ -7,9 +13,10 @@ import useStorage from "../hooks/useStorage"
 
 type StoreState = {
   locations: MapMarkerType[]
+  filterString: string
 }
 
-type PayloadOptions = MapMarkerType | MapMarkerType[] | number
+// type PayloadOptions = MapMarkerType | MapMarkerType[] | number
 
 type ReducerActionType = {
   type: string
@@ -18,12 +25,18 @@ type ReducerActionType = {
 
 const initialState: StoreState = {
   locations: [],
+  filterString: "all",
 }
 
 // TODO: Type action and payloadOptions
 // TODO: move localstorage operations to this file toghter with state
 const reducers = (state: StoreState, action: ReducerActionType) => {
   switch (action.type) {
+    case "update-filter":
+      return {
+        ...state,
+        filterString: action.payload,
+      }
     case "update-map-markers":
       return {
         ...state,
@@ -69,12 +82,16 @@ export interface StoreContextState {
   dispatch: React.Dispatch<any>
 }
 
+// type PropsWithChildren<P> = P & { children?: ReactNode | undefined }
+
 const StoreContext = createContext<StoreContextState>({
   state: initialState,
   dispatch: () => undefined,
 })
 
-export const StoreContextProvider: React.FC = (props) => {
+export const StoreContextProvider = (props: {
+  children?: ReactNode | undefined
+}) => {
   const [store, dispatch] = useReducer(reducers, initialState)
   const [markerState, setMarkerState] = React.useState([])
   const { getLocationStorage } = useStorage()
@@ -83,7 +100,8 @@ export const StoreContextProvider: React.FC = (props) => {
     const starCountRef = dbRef(db, `markers`)
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val()
-      setMarkerState(Object.values(data))
+      console.log("data: ", data)
+      if (data) setMarkerState(Object.values(data))
     })
   }, [])
 

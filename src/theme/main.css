@@ -1,3 +1,9 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
+
+.location-header-titel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

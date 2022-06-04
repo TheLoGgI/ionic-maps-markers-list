@@ -30,9 +30,9 @@ import { IonReactRouter } from "@ionic/react-router"
 import { list, map } from "ionicons/icons"
 import { Redirect, Route } from "react-router-dom"
 
+import CollectionPage from "./pages/CollectionPage"
 import LocationPage from "./pages/LocationPage"
 import MapPage from "./pages/MapPage"
-import Tab1 from "./pages/Tab1"
 import { StoreContextProvider } from "./store/AppContext"
 
 setupIonicReact()
@@ -51,7 +51,7 @@ const IonicApp: React.FC = () => (
       <IonTabs>
         <IonRouterOutlet>
           <Route exact path="/list">
-            <Tab1 />
+            <CollectionPage />
           </Route>
           <Route path="/map">
             <MapPage />

@@ -4,9 +4,12 @@ import {
   IonButton,
   IonCard,
   IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
   IonContent,
   IonHeader,
   IonIcon,
+  IonImg,
   IonItem,
   IonLabel,
   IonLoading,
@@ -40,12 +43,16 @@ function ImageFallback({ handleButton }: { handleButton: () => void }) {
       <IonText color="medium" className="ion-margin-bottom block">
         Share photos of your trip
       </IonText>
-      <IonButton color="secondary" className="my-4" onClick={handleButton}>
-        <IonIcon color="light" icon={imageOutline} className="mr-2" />
+      <IonButton color="secondary" className="btn-photo" onClick={handleButton}>
+        <IonIcon color="light" icon={imageOutline} className="icon-margin" />
         <IonText color="light">Add photos</IonText>
       </IonButton>
     </div>
   )
+}
+
+function staticMap(lat: number, lng: number) {
+  return `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=8&size=500x500&markers=color:blue|${lat},${lng}&key=AIzaSyAuhATUKdxNac1FGR5zlADZoIqoRuD8x7Q`
 }
 
 const LocationPage: React.FC = () => {
@@ -85,8 +92,6 @@ const LocationPage: React.FC = () => {
     setIsloading(true)
     if (images.photos.length > 0) {
       images.photos.forEach(async (photo) => {
-        console.log("photo: ", photo)
-
         // Get unique identifier from image path
         const photopathArr = photo.webPath.split("/")
         const photoId = photopathArr[photopathArr.length - 1]
@@ -130,7 +135,7 @@ const LocationPage: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonTitle>
-            <div className="flex justify-between items-center w-full">
+            <div className="location-header-titel">
               <IonText className="truncate">{location?.address}</IonText>
               <IonButton
                 color="secondary"
@@ -144,16 +149,27 @@ const LocationPage: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
+        {location !== undefined && (
+          <IonImg
+            src={staticMap(location.coordinates.lat, location.coordinates.lng)}
+            alt="image"
+          />
+        )}
         <IonLoading isOpen={isLoading} />
         {photos.map((photo, i) => (
           <IonCard key={photo.name + i}>
+            <IonCardHeader>
+              {location !== undefined && (
+                <IonCardTitle>
+                  {
+                    new Date(location?.date).toLocaleDateString("da-DK", {
+                      dateStyle: "long",
+                    }) /* Should come from metadata of the images */
+                  }
+                </IonCardTitle>
+              )}
+            </IonCardHeader>
             <IonCardContent>
-              <IonItem>
-                <IonLabel>
-                  Date:{" "}
-                  {location?.date /* Should come from metadata of the images */}
-                </IonLabel>
-              </IonItem>
               <img src={photo.url} alt="" />
             </IonCardContent>
           </IonCard>
