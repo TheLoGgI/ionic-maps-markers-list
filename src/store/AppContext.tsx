@@ -1,5 +1,11 @@
 import { ref as dbRef, onValue, set } from "firebase/database"
-import React, { createContext, useContext, useEffect, useReducer } from "react"
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+} from "react"
 
 import { MapMarkerType } from "../components/Map"
 import { db } from "../firebase"
@@ -7,9 +13,8 @@ import useStorage from "../hooks/useStorage"
 
 type StoreState = {
   locations: MapMarkerType[]
+  filterString: string
 }
-
-type PayloadOptions = MapMarkerType | MapMarkerType[] | number
 
 type ReducerActionType = {
   type: string
@@ -18,12 +23,16 @@ type ReducerActionType = {
 
 const initialState: StoreState = {
   locations: [],
+  filterString: "all",
 }
 
-// TODO: Type action and payloadOptions
-// TODO: move localstorage operations to this file toghter with state
 const reducers = (state: StoreState, action: ReducerActionType) => {
   switch (action.type) {
+    case "update-filter":
+      return {
+        ...state,
+        filterString: action.payload,
+      }
     case "update-map-markers":
       return {
         ...state,
@@ -74,28 +83,35 @@ const StoreContext = createContext<StoreContextState>({
   dispatch: () => undefined,
 })
 
-export const StoreContextProvider: React.FC = (props) => {
+export const StoreContextProvider = (props: {
+  children?: ReactNode | undefined
+}) => {
   const [store, dispatch] = useReducer(reducers, initialState)
   const [markerState, setMarkerState] = React.useState([])
-  const { getLocationStorage } = useStorage()
+
+  const { getLocationStorage, updateLocationsStorage } = useStorage()
 
   useEffect(() => {
     const starCountRef = dbRef(db, `markers`)
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val()
-      setMarkerState(Object.values(data))
+      if (data) setMarkerState(Object.values(data))
     })
   }, [])
 
   useEffect(() => {
     ;(async () => {
       const locations = await getLocationStorage()
+
+      if (markerState.length !== locations.length) {
+        updateLocationsStorage(markerState)
+      }
       dispatch({
         type: "update-map-markers",
         payload: markerState.length > 0 ? markerState : locations,
       })
     })()
-  }, [getLocationStorage, markerState])
+  }, [getLocationStorage, markerState, updateLocationsStorage])
 
   return (
     <StoreContext.Provider value={{ state: store, dispatch }}>
