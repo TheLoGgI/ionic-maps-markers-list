@@ -7,3 +7,39 @@
   justify-content: space-between;
   align-items: center;
 }
+
+.location-details-header {
+  background-color: var(--ion-color-light-shade);
+}
+
+.p-4 {
+  padding: 1rem;
+}
+.ml-4 {
+  margin-left: 1rem;
+}
+.ml-2 {
+  margin-left: 0.5rem;
+}
+.m-auto {
+  margin: 0 1rem;
+}
+
+.bg-toolbar {
+  --background: var(--ion-background-color);
+}
+
+.footer-padding {
+  padding: 2rem;
+  padding-bottom: 4rem;
+}
+
+.alert-button-group .btn-delete {
+  background-color: var(--ion-color-danger, red);
+  color: var(--ion-color-light-shade);
+}
+
+.alert-button-group .btn-update {
+  background-color: var(--ion-color-primary);
+  color: var(--ion-color-dark-shade);
+}

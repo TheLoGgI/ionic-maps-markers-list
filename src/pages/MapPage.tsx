@@ -7,7 +7,7 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react"
-import React from "react"
+import React, { useEffect } from "react"
 
 import Map, { MapMarkerType } from "../components/Map"
 import { useStoreContext } from "../store/AppContext"
@@ -17,6 +17,10 @@ const MapPage: React.FC = () => {
   const [filteredLocations, setFilteredLocations] = React.useState<
     MapMarkerType[]
   >(state.locations)
+
+  useEffect(() => {
+    setFilteredLocations(state.locations)
+  }, [filteredLocations.length, state.locations])
 
   const handleSegmentChange = (e: CustomEvent) => {
     const newFilter = e.detail.value

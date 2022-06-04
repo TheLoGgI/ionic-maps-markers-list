@@ -1,12 +1,17 @@
 import { Camera } from "@capacitor/camera"
 import { Toast } from "@capacitor/toast"
 import {
+  IonAlert,
   IonButton,
+  IonButtons,
   IonCard,
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
+  IonCol,
   IonContent,
+  IonFooter,
+  IonGrid,
   IonHeader,
   IonIcon,
   IonImg,
@@ -14,6 +19,7 @@ import {
   IonLabel,
   IonLoading,
   IonPage,
+  IonRow,
   IonText,
   IonTitle,
   IonToolbar,
@@ -27,7 +33,9 @@ import {
 import { imageOutline } from "ionicons/icons"
 import React, { useEffect } from "react"
 import { useParams } from "react-router"
+import { useHistory } from "react-router-dom"
 
+import { MapMarkerType } from "../components/Map"
 import { db, storage } from "../firebase"
 import { useStoreContext } from "../store/AppContext"
 
@@ -43,9 +51,9 @@ function ImageFallback({ handleButton }: { handleButton: () => void }) {
       <IonText color="medium" className="ion-margin-bottom block">
         Share photos of your trip
       </IonText>
-      <IonButton color="secondary" className="btn-photo" onClick={handleButton}>
-        <IonIcon color="light" icon={imageOutline} className="icon-margin" />
-        <IonText color="light">Add photos</IonText>
+      <IonButton color="primary" className="btn-photo" onClick={handleButton}>
+        <IonIcon icon={imageOutline} />
+        <IonText className="ml-4">Add photos</IonText>
       </IonButton>
     </div>
   )
@@ -56,14 +64,22 @@ function staticMap(lat: number, lng: number) {
 }
 
 const LocationPage: React.FC = () => {
-  const { state } = useStoreContext()
+  const { state, dispatch } = useStoreContext()
   const [isLoading, setIsloading] = React.useState(false)
   const [photos, setPhotos] = React.useState<ImageDBType[]>([])
+  const [showUpdateAlert, setShowUpdateAlert] = React.useState(false)
+  const [showDeleteAlert, setShowDeleteAlert] = React.useState(false)
+  const history = useHistory()
+  // const { updateLocationStorage, deleteItemLocationStorage } = useStorage()
 
   const { placeId } = useParams<{ placeId: string }>()
   const location = state.locations.find(
     (location) => location.placeId === placeId
   )
+  const locationIndex = state.locations.indexOf(location as MapMarkerType)
+
+  const isDateOld =
+    new Date(location?.date as string).getTime() - new Date().getTime() < 0
 
   useEffect(() => {
     if (!location) return
@@ -104,7 +120,6 @@ const LocationPage: React.FC = () => {
 
         // Fetch image from temporarily url and convert to blob
         const imageBlob = await fetch(photo.webPath).then((r) => r.blob())
-        console.log("blob: ", imageBlob)
 
         // Upload image to firebase storage
         const snapshot = await uploadBytes(newImageRef, imageBlob, {
@@ -136,14 +151,19 @@ const LocationPage: React.FC = () => {
         <IonToolbar>
           <IonTitle>
             <div className="location-header-titel">
-              <IonText className="truncate">{location?.address}</IonText>
-              <IonButton
-                color="secondary"
-                className="ion-margin-vertical"
-                onClick={takePicture}
-              >
-                <IonIcon color="light" icon={imageOutline} />
-              </IonButton>
+              <IonText className="truncate">{location?.country}</IonText>
+              <IonButtons>
+                <IonButton
+                  onClick={() => setShowUpdateAlert(true)}
+                  fill="clear"
+                >
+                  Update date
+                </IonButton>
+                <IonButton fill="solid" color="primary" onClick={takePicture}>
+                  <IonIcon icon={imageOutline} />
+                  <IonText className="ml-2">Add photos</IonText>
+                </IonButton>
+              </IonButtons>
             </div>
           </IonTitle>
         </IonToolbar>
@@ -155,28 +175,111 @@ const LocationPage: React.FC = () => {
             alt="image"
           />
         )}
+        <IonGrid className="location-details-header">
+          <IonRow>
+            <IonCol>
+              <IonRow>
+                <b>Coordinates</b>
+              </IonRow>
+              <IonRow>
+                <IonCol>lat: {location?.coordinates.lat}</IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol>lng: {location?.coordinates.lng}</IonCol>
+              </IonRow>
+            </IonCol>
+            <IonCol>
+              {location !== undefined && (
+                <IonRow>
+                  <IonCol>
+                    <b>{isDateOld ? "Visited: " : "Planning for: "}</b>
+                    {new Date(location.date).toLocaleDateString("da-DK", {
+                      dateStyle: "long",
+                    })}
+                  </IonCol>
+                </IonRow>
+              )}
+              <IonRow>
+                <IonCol>
+                  <b>Adress:</b> {location?.address}
+                </IonCol>
+              </IonRow>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
         <IonLoading isOpen={isLoading} />
         {photos.map((photo, i) => (
           <IonCard key={photo.name + i}>
-            <IonCardHeader>
-              {location !== undefined && (
-                <IonCardTitle>
-                  {
-                    new Date(location?.date).toLocaleDateString("da-DK", {
-                      dateStyle: "long",
-                    }) /* Should come from metadata of the images */
-                  }
-                </IonCardTitle>
-              )}
-            </IonCardHeader>
             <IonCardContent>
-              <img src={photo.url} alt="" />
+              <IonImg key={photo.name + i} src={photo.url} alt="image" />
             </IonCardContent>
           </IonCard>
         ))}
 
         {photos.length === 0 && <ImageFallback handleButton={takePicture} />}
+        <IonFooter className="footer-padding">
+          <IonToolbar className="bg-toolbar">
+            <IonButtons slot="end" className="m-auto">
+              <IonButton
+                color="danger"
+                onClick={() => setShowDeleteAlert(true)}
+              >
+                Delete location
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonFooter>
       </IonContent>
+      <IonAlert
+        isOpen={showUpdateAlert}
+        onDidDismiss={() => setShowUpdateAlert(false)}
+        header={"When do you plan to go?"}
+        inputs={[
+          {
+            name: "date",
+            type: "date",
+            value: location?.date,
+            placeholder: "Date of visit",
+          },
+        ]}
+        buttons={[
+          {
+            text: "Cancel",
+            role: "cancel",
+            cssClass: "secondary",
+          },
+          {
+            text: "Update marker",
+            cssClass: "btn-update",
+            handler: (e) => {
+              dispatch({
+                type: "update-map-marker",
+                payload: { date: e.date, id: location?.id },
+              })
+            },
+          },
+        ]}
+      />
+      <IonAlert
+        isOpen={showDeleteAlert}
+        onDidDismiss={() => setShowDeleteAlert(false)}
+        header="Are you sure you want to delete this location?"
+        buttons={[
+          {
+            text: "No, not yet",
+            role: "cancel",
+            cssClass: "secondary",
+          },
+          {
+            text: "Delete location",
+            cssClass: "btn-delete",
+            handler: (e) => {
+              dispatch({ type: "delete-map-marker", payload: locationIndex })
+              history.push("/list")
+            },
+          },
+        ]}
+      />
     </IonPage>
   )
 }

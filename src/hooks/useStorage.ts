@@ -27,6 +27,12 @@ const useStorage = () => {
 
   const updateLocationStorage = async (obj: MapMarkerType) => {
     const { value } = await Storage.get({ key: "location" })
+
+    if (value === null) {
+      addLocationStorage(obj)
+      return
+    }
+
     if (typeof value === "string") {
       const locations = JSON.parse(value)
       const newLocations = locations.map((location: MapMarkerType) =>
@@ -39,20 +45,23 @@ const useStorage = () => {
     }
   }
 
-  const updateLocationsStorage = async (obj: MapMarkerType[]) => {
+  const updateLocationsStorage = useCallback(async (obj: MapMarkerType[]) => {
     await Storage.set({
       key: "location",
       value: JSON.stringify(obj),
     })
-  }
+  }, [])
 
-  const deleteItemLocationStorage = async (index: number) => {
+  const deleteItemLocationStorage = async (locationId: string) => {
     const { value } = await Storage.get({ key: "location" })
     if (typeof value === "string") {
-      JSON.parse(value).splice(index, 1)
+      const storageLocations: MapMarkerType[] = JSON.parse(value)
+      const newLocations = storageLocations.filter(
+        (item) => item.id !== locationId
+      )
       await Storage.set({
         key: "location",
-        value: JSON.stringify(value),
+        value: JSON.stringify(newLocations),
       })
       return true
     }

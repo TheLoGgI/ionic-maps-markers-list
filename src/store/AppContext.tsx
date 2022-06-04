@@ -16,8 +16,6 @@ type StoreState = {
   filterString: string
 }
 
-// type PayloadOptions = MapMarkerType | MapMarkerType[] | number
-
 type ReducerActionType = {
   type: string
   payload: any
@@ -28,8 +26,6 @@ const initialState: StoreState = {
   filterString: "all",
 }
 
-// TODO: Type action and payloadOptions
-// TODO: move localstorage operations to this file toghter with state
 const reducers = (state: StoreState, action: ReducerActionType) => {
   switch (action.type) {
     case "update-filter":
@@ -82,8 +78,6 @@ export interface StoreContextState {
   dispatch: React.Dispatch<any>
 }
 
-// type PropsWithChildren<P> = P & { children?: ReactNode | undefined }
-
 const StoreContext = createContext<StoreContextState>({
   state: initialState,
   dispatch: () => undefined,
@@ -94,13 +88,13 @@ export const StoreContextProvider = (props: {
 }) => {
   const [store, dispatch] = useReducer(reducers, initialState)
   const [markerState, setMarkerState] = React.useState([])
-  const { getLocationStorage } = useStorage()
+
+  const { getLocationStorage, updateLocationsStorage } = useStorage()
 
   useEffect(() => {
     const starCountRef = dbRef(db, `markers`)
     onValue(starCountRef, (snapshot) => {
       const data = snapshot.val()
-      console.log("data: ", data)
       if (data) setMarkerState(Object.values(data))
     })
   }, [])
@@ -108,12 +102,16 @@ export const StoreContextProvider = (props: {
   useEffect(() => {
     ;(async () => {
       const locations = await getLocationStorage()
+
+      if (markerState.length !== locations.length) {
+        updateLocationsStorage(markerState)
+      }
       dispatch({
         type: "update-map-markers",
         payload: markerState.length > 0 ? markerState : locations,
       })
     })()
-  }, [getLocationStorage, markerState])
+  }, [getLocationStorage, markerState, updateLocationsStorage])
 
   return (
     <StoreContext.Provider value={{ state: store, dispatch }}>

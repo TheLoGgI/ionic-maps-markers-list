@@ -16,6 +16,7 @@ import {
 import React from "react"
 
 import ExploreContainer from "../components/ExploreContainer"
+import LocationListItem from "../components/LocationListItem"
 import { useStoreContext } from "../store/AppContext"
 
 const CollectionPage: React.FC = () => {
@@ -31,7 +32,6 @@ const CollectionPage: React.FC = () => {
 
   function handleSegmentChange(e: CustomEvent) {
     const newFilter = e.detail.value
-    console.log("newFilter: ", newFilter)
     dispatch({ type: "update-filter", payload: newFilter })
   }
 
@@ -57,73 +57,21 @@ const CollectionPage: React.FC = () => {
           <ExploreContainer name="You have no markers placed" />
         ) : (
           <IonList>
-            {(state.filterString === "all" ||
-              state.filterString === "visited") && (
-              <>
-                <IonItemDivider>
-                  <IonLabel>Visited</IonLabel>
-                </IonItemDivider>
-                {visited.map((location, index) => (
-                  <IonRouterLink
-                    key={index}
-                    color="dark"
-                    href={`location/${location.placeId}`}
-                  >
-                    <IonItem>
-                      <IonAvatar slot="start">
-                        <img
-                          src={`https://countryflagsapi.com/png/${location.country}`}
-                          alt="asdads"
-                        />
-                      </IonAvatar>
-                      <IonLabel>
-                        <h2>{location.address}</h2>
-                        <p>
-                          Visited on{" "}
-                          {new Date(location.date).toLocaleDateString("da-dk", {
-                            dateStyle: "medium",
-                          })}
-                        </p>
-                      </IonLabel>
-                    </IonItem>
-                  </IonRouterLink>
-                ))}
-              </>
-            )}
-
-            {(state.filterString === "all" ||
-              state.filterString === "planning") && (
-              <>
-                <IonItemDivider>
-                  <IonLabel>Comming up</IonLabel>
-                </IonItemDivider>
-                {planned.map((location, index) => (
-                  <IonRouterLink
-                    key={index}
-                    color="dark"
-                    href={`location/${location.placeId}`}
-                  >
-                    <IonItem>
-                      <IonAvatar slot="start">
-                        <img
-                          src={`https://countryflagsapi.com/png/${location.country}`}
-                          alt="asdads"
-                        />
-                      </IonAvatar>
-                      <IonLabel>
-                        <h2>{location.address}</h2>
-                        <p>
-                          Planned for{" "}
-                          {new Date(location.date).toLocaleDateString("da-dk", {
-                            dateStyle: "medium",
-                          })}
-                        </p>
-                      </IonLabel>
-                    </IonItem>
-                  </IonRouterLink>
-                ))}
-              </>
-            )}
+            <LocationListItem
+              title="Visted"
+              locations={visited}
+              show={
+                state.filterString === "all" || state.filterString === "visited"
+              }
+            />
+            <LocationListItem
+              title="Comming up"
+              locations={planned}
+              show={
+                state.filterString === "all" ||
+                state.filterString === "planning"
+              }
+            />
           </IonList>
         )}
       </IonContent>
