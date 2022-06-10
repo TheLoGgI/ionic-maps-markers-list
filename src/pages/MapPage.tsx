@@ -20,7 +20,7 @@ const MapPage: React.FC = () => {
 
   useEffect(() => {
     setFilteredLocations(state.locations)
-  }, [filteredLocations.length, state.locations])
+  }, [state.locations])
 
   const handleSegmentChange = (e: CustomEvent) => {
     const newFilter = e.detail.value
